@@ -8,5 +8,5 @@
 - Get a mapbox token at https://account.mapbox.com/access-tokens/.  
 - Save that to a file named ".mapbox_token" in the project directory.
 - Start the program by running `python3 app.py`.
-- The first line of output will be: "Dash is running on \<ip address\>".  Click on that address, or paste it into the browser.
-- Have fun!
+- The first line of output should be: "Dash is running on \<ip address\>".  Click on that address, or paste it into the browser.
+- Change the information on the plot by changing the values in the text boxes. 
