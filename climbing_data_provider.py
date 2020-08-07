@@ -1,5 +1,3 @@
-import os
-
 import pandas
 
 import json_helper
@@ -8,15 +6,24 @@ from logger import logger
 
 
 class RockClimbingDataProvider:
+    """
+    Creates a DataFrame which contains information on rock climbing routes around a particular latitude and
+    longitude.
+    """
+
     url = "https://www.mountainproject.com/data/get-routes-for-lat-lon"
 
-    max_distance = 10
-    max_results = 20
-    min_diff = "5.1"
-    max_diff = "5.15"
-
-    def __init__(self, latitude, longitude, max_distance=10, max_results=20, min_diff="5.1", max_diff="5.15",
-                 api_key=os.getenv("APIKEY")):
+    def __init__(self, latitude, longitude, api_key, max_distance=10, max_results=20, min_diff="5.1", max_diff="5.15"):
+        """
+        Constructor for RockClimbingDataProvider
+        :param latitude: Central Latitude for query
+        :param longitude: Central Latitude for query
+        :param api_key: The API Key for the Query
+        :param max_distance: How far out to query from the central point, in miles.
+        :param max_results: Maximum number of results
+        :param min_diff: Minimum difficulty
+        :param max_diff: Maximum difficulty
+        """
         self.latitude = latitude
         self.longitude = longitude
         self.max_distance = max_distance
@@ -26,6 +33,9 @@ class RockClimbingDataProvider:
         self.api_key = api_key
 
     def create_routes_data_frame(self):
+        """
+        Creates a DataFrame containing information on the routes queried.
+        """
         routes_df = pandas.DataFrame(self._get_routes())
 
         if routes_df.empty:
@@ -51,6 +61,7 @@ class RockClimbingDataProvider:
         return routes_df
 
     def _get_routes(self):
+        """Queries https://www.mountainproject.com/data/get-routes-for-lat-lon """
         json_response = json_helper.get_json(
             self.url, lat=self.latitude, lon=self.longitude,
             maxDistance=self.max_distance, maxResults=self.max_results,

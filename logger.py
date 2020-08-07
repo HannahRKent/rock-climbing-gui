@@ -1,3 +1,5 @@
+"""Logger with a stream handler"""
+
 import logging
 
 logger = logging.getLogger(__name__)

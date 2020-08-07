@@ -3,6 +3,7 @@
 # Run this app with `python app.py` and
 # visit http://127.0.0.1:8050/ in your web browser.
 
+import os
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
@@ -15,8 +16,9 @@ external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
-data_provider = RockClimbingDataProvider(40.03, -105.25)
+data_provider = RockClimbingDataProvider(40.03, -105.25, os.getenv("APIKEY"))
 
+# Starting data for the scatterplot.
 app.layout = html.Div([
     html.H1("Rock climbing stuff!", style={"textAlign": "center"}),
     html.Div(children=[
@@ -28,9 +30,9 @@ app.layout = html.Div([
         dcc.Input(id="input-max-distance", value=data_provider.max_distance, type="text"),
         html.Label("Max Results"),
         dcc.Input(id="input-max-results", value=data_provider.max_results, type="text"),
-        html.Label("Min Diff"),
+        html.Label("Minimum Difficulty"),
         dcc.Input(id="input-min-diff", value=data_provider.min_diff, type="text"),
-        html.Label("Max Diff"),
+        html.Label("Maximum Difficulty"),
         dcc.Input(id="input-max-diff", value=data_provider.max_diff, type="text"),
         html.Button("Update", id="button-update"),
     ]),
@@ -50,6 +52,17 @@ app.layout = html.Div([
         State("input-max-diff", "value"),
     ])
 def update_graph(n_clicks, latitude, longitude, max_distance, max_results, min_diff, max_diff):
+    """
+    Updates the scatterplot map
+    :param n_clicks:
+    :param latitude: Central latitude
+    :param longitude: Central longitude
+    :param max_distance: How far out to query points, in miles.
+    :param max_results: Maximum number of results
+    :param min_diff: Minimum difficulty
+    :param max_diff: Maximum difficulty
+    :return: A scatterplot map of routes which is rendered in Dash
+    """
     data_provider.latitude = latitude
     data_provider.longitude = longitude
     data_provider.max_distance = int(max_distance)

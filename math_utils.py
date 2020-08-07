@@ -3,6 +3,15 @@ from math import radians, sin, cos, acos
 
 
 def get_distance_lat_long(latitude_1, longitude_1, latitude_2, longitude_2, unit="km"):
+    """
+    Get the distance between two points on a map.
+    :param latitude_1: The latitude of the first point
+    :param longitude_1: The longitude of the first point
+    :param latitude_2: The latitude of the second point
+    :param longitude_2: The latitude of the second point
+    :param unit: The unit the distance should be returned in.  Options: km or mi
+    :return: The distance between the two points
+    """
     if unit == "km":
         radius = 6371.01
     elif unit == "mi":
@@ -24,10 +33,10 @@ def get_distance_lat_long(latitude_1, longitude_1, latitude_2, longitude_2, unit
 
 def rating_to_number(rating, climbing_type):
     """
-
-    :param rating:
-    :param climbing_type:
-    :return:
+    Takes a rating and type of route and returns a number that represents its magnitude
+    :param rating: The rating of the route.  e. g. 5.10a or V5
+    :param climbing_type: The type of route.  Options: Trad, Sport, Toprope, or Boulder
+    :return: The magnitude of the route bubbles.  Range: 1 to 18
     """
 
     rock_regex_pattern = r"5\.(\d+).*"

@@ -1,9 +1,10 @@
+"""Test data for climbing_data_provider tests"""
 import pandas
 
 url = "https://www.mountainproject.com/data/get-routes-for-lat-lon?lat=40.03&lon=-105.25&maxDistance=10&maxResults=20" \
       "&minDiff=5.1&maxDiff=5.15&key=test_key"
 
-text = """{
+json_response = """{
     "routes": [
         {
             "id": 105748490,
@@ -468,4 +469,4 @@ text = """{
 }
 """
 
-state_result = pandas.Series(["Colorado"] * 20, name="state")
+expected_state_series = pandas.Series(["Colorado"] * 20, name="state")
