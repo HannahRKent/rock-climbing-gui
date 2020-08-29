@@ -10,7 +10,7 @@ import dash_html_components as html
 import plotly.express as px
 from dash.dependencies import Input, Output, State
 
-from climbing_data_provider import RockClimbingDataProvider
+from rockclimbing.climbing_data_provider import RockClimbingDataProvider
 
 external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
 

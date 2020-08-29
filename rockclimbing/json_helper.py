@@ -1,6 +1,6 @@
 import requests
 
-from logger import logger
+from rockclimbing.logger import logger
 
 
 def _build_url(url, **params):

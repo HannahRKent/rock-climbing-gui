@@ -1,6 +1,6 @@
 import unittest
 
-from math_utils import *
+from rockclimbing.geolocation import *
 
 
 class MathUtilsTestCase(unittest.TestCase):

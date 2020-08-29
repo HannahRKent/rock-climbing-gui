@@ -3,7 +3,7 @@ import unittest
 import pandas
 import requests_mock
 
-from climbing_data_provider import RockClimbingDataProvider
+from rockclimbing.climbing_data_provider import RockClimbingDataProvider
 from test_data import empty_data_frame, boulder_co_data_frame
 
 

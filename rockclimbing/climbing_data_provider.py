@@ -1,8 +1,7 @@
 import pandas
 
-import json_helper
-import math_utils
-from logger import logger
+from rockclimbing import geolocation, json_helper
+from rockclimbing.logger import logger
 
 
 class RockClimbingDataProvider:
@@ -46,12 +45,12 @@ class RockClimbingDataProvider:
         routes_df['state'] = routes_df["location"].apply(lambda x: x[0])
         routes_df['city'] = routes_df["location"].apply(lambda x: x[1])
         routes_df["distance_from_origin"] = routes_df.apply(
-            lambda x: math_utils.get_distance_lat_long(
+            lambda x: geolocation.get_distance_lat_long(
                 self.latitude, self.longitude, x["latitude"], x["longitude"], unit="mi"),
             axis=1)
 
         routes_df["rating_number"] = routes_df.apply(
-            lambda x: math_utils.rating_to_number(x["rating"], x["type"]), axis=1)
+            lambda x: geolocation.rating_to_number(x["rating"], x["type"]), axis=1)
 
         routes_df.dropna(subset=["rating_number"], inplace=True)
 

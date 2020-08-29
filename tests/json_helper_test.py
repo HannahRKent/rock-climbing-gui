@@ -1,6 +1,6 @@
 import unittest
 
-from json_helper import _build_url as build_url
+from rockclimbing.json_helper import _build_url as build_url
 
 
 class UrlConstructionTest(unittest.TestCase):
