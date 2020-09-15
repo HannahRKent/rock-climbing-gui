@@ -5,8 +5,8 @@
 - Install the requirements via `pip3 install -r requirements.txt`.
 - Visit https://www.mountainproject.com/data and set up an account to get an API key. 
 - Set the environment variable  "APIKEY" to the API Key above. 
-- Start the program by running `python3 app.py`.
-- The first line of output will be: "Dash is running on \<ip address\>".  Click on that address, or paste it into the browser.
+- Start the program by running `python3 rockclimbing/app.py`.
+- Look for the line: "Dash is running on \<ip address\>".  Click on that address, or paste it into the browser.
 - This program works for both bouldering routes and rock climbing routes.  
     - To filter on bouldering routes, enter values
 between V0 and V17.  
