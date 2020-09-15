@@ -1,7 +1,31 @@
 import pandas
 
-from rockclimbing import geolocation, json_helper
+from rockclimbing import json_helper
+from rockclimbing.geolocation import Geolocation, get_distance
 from rockclimbing.logger import logger
+from rockclimbing.ratings import yosemite as y_rating, bouldering as b_rating
+from rockclimbing.ratings.bouldering import Rating as BRating
+from rockclimbing.ratings.yosemite import Rating as YRating
+
+
+def rating_to_number(rating, climbing_type):
+    """
+    Takes a rating and type of route and returns a number that represents its magnitude
+    :param rating: The rating of the route.  e. g. 5.10a or V5
+    :param climbing_type: The type of route.  Options: Trad, Sport, Toprope, or Boulder
+    :return: The magnitude of the route bubbles.  Range: 1 to 15
+    """
+    try:
+        if "Trad" in climbing_type or "Sport" in climbing_type or "Toprope" in climbing_type:
+            rating_number = y_rating.parse_rating(rating).number
+        elif "Boulder" in climbing_type:
+            rating_number = (b_rating.parse_rating(rating).number + 1) * YRating.count() / BRating.count()
+        else:
+            logger.error("Unknown climbing type {}".format(climbing_type))
+            raise RuntimeError("Unknown climbing type {}".format(climbing_type))
+        return rating_number
+    except RuntimeError:
+        return None
 
 
 class RockClimbingDataProvider:
@@ -12,7 +36,7 @@ class RockClimbingDataProvider:
 
     url = "https://www.mountainproject.com/data/get-routes-for-lat-lon"
 
-    def __init__(self, latitude, longitude, api_key, max_distance=10, max_results=20, min_diff="5.1", max_diff="5.15"):
+    def __init__(self, latitude, longitude, api_key, max_distance=100, max_results=20, min_diff="5.1", max_diff="5.15"):
         """
         Constructor for RockClimbingDataProvider
         :param latitude: Central Latitude for query
@@ -23,8 +47,7 @@ class RockClimbingDataProvider:
         :param min_diff: Minimum difficulty
         :param max_diff: Maximum difficulty
         """
-        self.latitude = latitude
-        self.longitude = longitude
+        self.geolocation = Geolocation(latitude, longitude)
         self.max_distance = max_distance
         self.max_results = max_results
         self.min_diff = min_diff
@@ -35,34 +58,42 @@ class RockClimbingDataProvider:
         """
         Creates a DataFrame containing information on the routes queried.
         """
+        logger.debug(
+            "self.geolocation: {}, self.max_distance: {}, self.max_results: {}, self.min_diff: {}, self.max_diff: {}".format(
+                self.geolocation, self.max_distance, self.max_results, self.min_diff, self.max_diff))
+
         routes_df = pandas.DataFrame(self._get_routes())
 
         if routes_df.empty:
-            routes_df["latitude"] = [self.latitude]
-            routes_df["longitude"] = [self.longitude]
+            self._assign_lat_lon_df(routes_df)
             return routes_df
 
-        routes_df['state'] = routes_df["location"].apply(lambda x: x[0])
-        routes_df['city'] = routes_df["location"].apply(lambda x: x[1])
         routes_df["distance_from_origin"] = routes_df.apply(
-            lambda x: geolocation.get_distance_lat_long(
-                self.latitude, self.longitude, x["latitude"], x["longitude"], unit="mi"),
+            lambda x: get_distance(
+                self.geolocation, Geolocation(x["latitude"], x["longitude"]), unit="mi"),
             axis=1)
 
         routes_df["rating_number"] = routes_df.apply(
-            lambda x: geolocation.rating_to_number(x["rating"], x["type"]), axis=1)
-
+            lambda x: rating_to_number(x["rating"], x["type"]), axis=1)
         routes_df.dropna(subset=["rating_number"], inplace=True)
 
         index_names = routes_df[routes_df['distance_from_origin'] > self.max_distance].index
         routes_df.drop(index_names, inplace=True)
 
+        if routes_df.empty:
+            self._assign_lat_lon_df(routes_df)
+
         return routes_df
+
+    def _assign_lat_lon_df(self, df):
+        df["latitude"] = [self.geolocation.latitude]
+        df["longitude"] = [self.geolocation.longitude]
+        return df
 
     def _get_routes(self):
         """Queries https://www.mountainproject.com/data/get-routes-for-lat-lon """
         json_response = json_helper.get_json(
-            self.url, lat=self.latitude, lon=self.longitude,
+            self.url, lat=self.geolocation.latitude, lon=self.geolocation.longitude,
             maxDistance=self.max_distance, maxResults=self.max_results,
             minDiff=self.min_diff, maxDiff=self.max_diff, key=self.api_key)
 
