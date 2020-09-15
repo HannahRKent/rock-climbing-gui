@@ -28,4 +28,8 @@ class NoDataRockClimbingDataTest(unittest.TestCase):
             m.get(boulder_co_data_frame.url, text=boulder_co_data_frame.json_response)
             routes_df = self.rock_climbing_data.create_routes_data_frame()
 
-        pandas.testing.assert_series_equal(routes_df["state"], boulder_co_data_frame.expected_state_series)
+        self.assertEqual(routes_df.size, 340)
+
+
+if __name__ == '__main__':
+    unittest.main()
